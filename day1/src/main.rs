@@ -8,10 +8,10 @@ fn part1() {
     let stdin = io::stdin();
     let mut lines = stdin.lock().lines();
 
-    let mut previous = lines.next().unwrap().unwrap().parse::<i64>().unwrap();
-    let mut larger = 0u64;
+    let mut previous = lines.next().unwrap().unwrap().parse::<u32>().unwrap();
+    let mut larger = 0u32;
     while let Some(line) = lines.next() {
-        let current = line.unwrap().parse::<i64>().unwrap();
+        let current = line.unwrap().parse::<u32>().unwrap();
         if current > previous {
             larger += 1;
         }
@@ -26,24 +26,25 @@ fn part2() {
     let stdin = io::stdin();
     let mut lines = stdin.lock().lines();
 
-    let mut deque = VecDeque::new();
-    let mut larger = 0u64;
+    let mut deque: VecDeque<u32> = (&mut lines)
+        .take(3)
+        .map(|v| v.unwrap().parse::<u32>().unwrap())
+        .collect();
+    let mut previous: u32 = deque.iter().sum();
+
+    let mut larger = 0u32;
     while let Some(line) = lines.next() {
-        let value = line.unwrap().parse::<i64>().unwrap();
+        let removed = deque.pop_front().unwrap();
 
-        if deque.len() == 3 {
-            let previous: i64 = deque.iter().sum();
-            deque.pop_front();
+        let value = line.unwrap().parse::<u32>().unwrap();
+        deque.push_back(value);
+        let current: u32 = previous - removed + value;
 
-            deque.push_back(value);
-            let current: i64 = deque.iter().sum();
-
-            if current > previous {
-                larger += 1;
-            }
-        } else {
-            deque.push_back(value);
+        if current > previous {
+            larger += 1;
         }
+
+        previous = current;
     }
 
     println!("In total there were {} larger measurements.", larger);
