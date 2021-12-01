@@ -1,5 +1,4 @@
 use std::{
-    collections::VecDeque,
     env,
     io::{self, BufRead},
 };
@@ -29,22 +28,20 @@ fn part2() {
         .lines()
         .map(|s| s.unwrap().parse::<u32>().unwrap())
         .collect();
-    let mut windows = values.windows(3);
 
-    let mut previous = windows.next().unwrap().iter().sum();
-    let mut larger = 0u32;
+    let (_, l) =
+        values
+            .windows(3)
+            .map(|s| s.iter().sum())
+            .fold((u32::MAX, 0u32), |(prev, l), curr| {
+                if curr > prev {
+                    (curr, l + 1)
+                } else {
+                    (curr, l)
+                }
+            });
 
-    for w in windows {
-        let current: u32 = w.iter().sum();
-
-        if current > previous {
-            larger += 1;
-        }
-
-        previous = current;
-    }
-
-    println!("In total there were {} larger measurements.", larger);
+    println!("In total there were {} larger measurements.", l);
 }
 
 fn main() {
