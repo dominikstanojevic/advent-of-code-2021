@@ -24,21 +24,18 @@ fn part1() {
 
 fn part2() {
     let stdin = io::stdin();
-    let mut lines = stdin.lock().lines();
-
-    let mut deque: VecDeque<u32> = (&mut lines)
-        .take(3)
-        .map(|v| v.unwrap().parse::<u32>().unwrap())
+    let values: Vec<u32> = stdin
+        .lock()
+        .lines()
+        .map(|s| s.unwrap().parse::<u32>().unwrap())
         .collect();
-    let mut previous: u32 = deque.iter().sum();
+    let mut windows = values.windows(3);
 
+    let mut previous = windows.next().unwrap().iter().sum();
     let mut larger = 0u32;
-    while let Some(line) = lines.next() {
-        let removed = deque.pop_front().unwrap();
 
-        let value = line.unwrap().parse::<u32>().unwrap();
-        deque.push_back(value);
-        let current: u32 = previous - removed + value;
+    for w in windows {
+        let current: u32 = w.iter().sum();
 
         if current > previous {
             larger += 1;
