@@ -1,7 +1,6 @@
 use std::{
     collections::HashSet,
     env,
-    hash::Hash,
     io::{self, BufRead},
     iter::FromIterator,
 };
