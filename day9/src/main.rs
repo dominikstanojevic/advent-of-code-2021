@@ -1,7 +1,6 @@
 use std::{
     collections::{HashSet, VecDeque},
     env,
-    hash::Hash,
     io::{self, BufRead},
 };
 
