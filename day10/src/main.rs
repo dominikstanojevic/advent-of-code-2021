@@ -1,6 +1,4 @@
-use lazy_static::lazy_static;
 use std::{
-    collections::{HashMap, VecDeque},
     env,
     io::{self, BufRead},
 };
@@ -33,13 +31,13 @@ fn error_values(symbol: char) -> u64 {
 fn part1(lines: Vec<String>) {
     let mut errs = 0;
     for line in lines {
-        let mut stack = VecDeque::new();
+        let mut stack = Vec::new();
 
         for c in line.chars() {
             if c == '(' || c == '[' || c == '<' || c == '{' {
-                stack.push_back(c);
+                stack.push(c);
             } else {
-                if is_corrupted(c, stack.pop_back().unwrap()) {
+                if is_corrupted(c, stack.pop().unwrap()) {
                     errs += error_values(c);
                     break;
                 }
@@ -63,14 +61,14 @@ fn is_corrupted(symbol: char, stack_top: char) -> bool {
 fn part2(lines: Vec<String>) {
     let mut total = Vec::new();
     for line in lines {
-        let mut stack = VecDeque::new();
+        let mut stack = Vec::new();
         let mut discard = false;
 
         for c in line.chars() {
             if c == '(' || c == '[' || c == '<' || c == '{' {
-                stack.push_back(c);
+                stack.push(c);
             } else {
-                if is_corrupted(c, stack.pop_back().unwrap()) {
+                if is_corrupted(c, stack.pop().unwrap()) {
                     discard = true;
                     break;
                 }
@@ -82,7 +80,7 @@ fn part2(lines: Vec<String>) {
         }
 
         let mut score: u64 = 0;
-        while let Some(c) = stack.pop_back() {
+        while let Some(c) = stack.pop() {
             score = score * 5 + get_score(c);
         }
         total.push(score);
