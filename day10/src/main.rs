@@ -79,10 +79,10 @@ fn part2(lines: Vec<String>) {
             continue;
         }
 
-        let mut score: u64 = 0;
-        while let Some(c) = stack.pop() {
-            score = score * 5 + get_score(c);
-        }
+        let score = stack
+            .into_iter()
+            .rev()
+            .fold(0, |score, c| score * 5 + get_score(c));
         total.push(score);
     }
 
