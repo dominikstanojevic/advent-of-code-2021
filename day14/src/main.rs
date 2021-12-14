@@ -28,7 +28,7 @@ fn parse_data() -> (Vec<char>, HashMap<(char, char), char>) {
     let rules: HashMap<(char, char), char> = lines
         .map(|s| {
             let mut d = s.trim().split("->");
-            let left = d.next().unwrap().trim().chars();
+            let mut left = d.next().unwrap().trim().chars();
             let left: (char, char) = (left.next().unwrap(), left.next().unwrap());
 
             let right = d.next().and_then(|s| s.trim().chars().next()).unwrap();
@@ -43,7 +43,7 @@ fn parse_data() -> (Vec<char>, HashMap<(char, char), char>) {
 fn task(template: Vec<char>, rules: HashMap<(char, char), char>, steps: u8) {
     let mut bigrams: HashMap<(char, char), u64> =
         template.windows(2).fold(HashMap::new(), |mut b, w| {
-            *b.entry(w.iter().collect()).or_insert(0u64) += 1;
+            *b.entry((w[0], w[1])).or_insert(0u64) += 1;
             b
         });
 
@@ -51,9 +51,8 @@ fn task(template: Vec<char>, rules: HashMap<(char, char), char>, steps: u8) {
         let mut new_bigrams = HashMap::new();
         for (bigram, count) in bigrams {
             let middle = *rules.get(&bigram).unwrap();
-            let mut bigram = bigram.chars();
-            let left = format!("{}{}", bigram.nth(0).unwrap(), middle);
-            let right = format!("{}{}", middle, bigram.nth(0).unwrap());
+            let left = (bigram.0, middle);
+            let right = (middle, bigram.1);
 
             *new_bigrams.entry(left).or_insert(0u64) += count;
             *new_bigrams.entry(right).or_insert(0u64) += count;
@@ -62,13 +61,14 @@ fn task(template: Vec<char>, rules: HashMap<(char, char), char>, steps: u8) {
         bigrams = new_bigrams;
     }
 
-    let mut counts = bigrams
-        .into_iter()
-        .map(|(b, c)| (b.chars().nth(0).unwrap(), c))
-        .fold(HashMap::new(), |mut count, (l, c)| {
-            *count.entry(l).or_insert(0u64) += c;
-            count
-        });
+    let mut counts =
+        bigrams
+            .into_iter()
+            .map(|(b, c)| (b.0, c))
+            .fold(HashMap::new(), |mut count, (l, c)| {
+                *count.entry(l).or_insert(0u64) += c;
+                count
+            });
     *counts.get_mut(&template[template.len() - 1]).unwrap() += 1;
 
     let (min, max) = counts
